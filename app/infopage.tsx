@@ -28,7 +28,7 @@ export default function SignUp() {
 
   return (
     <ImageBackground
-      source={require('../assets/images/bg.png')} // Replace with your image URL
+      source={require('../assets/images/bg.png')} 
       style={styles.background}
       resizeMode="cover"
     >
