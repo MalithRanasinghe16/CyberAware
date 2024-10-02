@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
   learningText: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#000',
+    color: '#fff',
     marginBottom: 10,
   },
   searchContainer: {
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#000',
+    color: '#fff',
     marginBottom: 10,
   },
   essentialsList: {

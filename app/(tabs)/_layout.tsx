@@ -6,6 +6,11 @@ import { Pressable } from 'react-native';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import Entypo from '@expo/vector-icons/Entypo';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import { black } from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
@@ -25,12 +30,13 @@ export default function TabLayout() {
         // Disable the static render of the header on web
         // to prevent a hydration error in React Navigation v6.
         headerShown: useClientOnlyValue(false, true),
+       
       }}>
       <Tabs.Screen
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          tabBarIcon: ({ color }) =>  <Ionicons name="home-outline" size={24} color="black" />,
           headerShown:false,
         
         }}
@@ -39,7 +45,7 @@ export default function TabLayout() {
         name="two"
         options={{
           title: 'Learning',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          tabBarIcon: ({ color }) => <Entypo name="open-book" size={24} color="black" />,
           headerShown:false,
         }}
       />
@@ -47,7 +53,7 @@ export default function TabLayout() {
         name="three"
         options={{
           title: 'Ranking',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          tabBarIcon: ({ color }) => <FontAwesome6 name="ranking-star" size={24} color="black" />,
           headerShown:false,
         }}
       />
@@ -55,7 +61,7 @@ export default function TabLayout() {
         name="four"
         options={{
           title: 'Setings',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          tabBarIcon: ({ color }) => <AntDesign name="setting" size={24} color="black" />,
           headerShown:false,
         }}
       />

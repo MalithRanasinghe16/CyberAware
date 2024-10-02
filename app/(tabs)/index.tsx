@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
   rankingText: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#333',
+    color: '#fff',
   },
   rankBar: {
     height: 20,
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   enrolledText: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#fff',
     marginBottom: 10,
     marginTop:30
   },
