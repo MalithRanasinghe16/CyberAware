@@ -1,11 +1,12 @@
+import { Link } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, Image, ImageBackground, Pressable, TextInput, Dimensions } from 'react-native';
 
 // Placeholder data for Essentials and All Modules
 const essentialsCourses = [
-  { id: '1', title: 'Cybersecurity Awareness', description: 'Training Essentials', image: 'https://your-image-url.com/essentials1.jpg' },
-  { id: '2', title: 'Phishing Attack Basics', description: 'Phishing Module', image: 'https://your-image-url.com/essentials2.jpg' },
-  { id: '3', title: 'Password Security', description: 'Essential Module', image: 'https://your-image-url.com/essentials3.jpg' },
+  { id: '1', title: 'Cybersecurity Awareness', description: 'Training Essentials', image: '' },
+  { id: '2', title: 'Phishing Attack Basics', description: 'Phishing Module', image: '' },
+  { id: '3', title: 'Password Security', description: 'Essential Module', image: '' },
 ];
 
 const allModulesCourses = [
@@ -19,7 +20,7 @@ const allModulesCourses = [
 export default function AllCoursesPage() {
   return (
     <ImageBackground
-      source={require('../../assets/images/bg.png')} // Replace with your background image URL
+      source={require('../../assets/images/bg.png')} 
       style={styles.background}
     >
       <View style={styles.container}>
@@ -59,8 +60,11 @@ export default function AllCoursesPage() {
             <View style={styles.moduleCard}>
               <Text style={styles.moduleTitle}>{item.description}</Text>
               <Text style={styles.moduleSubtitle}>{item.title}</Text>
-              <Pressable style={styles.startButton}>
+              <Pressable  style={styles.startButton} >
+                <Link href="/learing-content">
                 <Text style={styles.startButtonText}>Start Learning</Text>
+                </Link>
+                
               </Pressable>
             </View>
           )}

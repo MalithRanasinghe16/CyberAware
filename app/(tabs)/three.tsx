@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ImageBackground } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
 import { Dimensions } from 'react-native';
-import { ProgressBar } from 'react-native-paper'; // Assuming you've added this library for progress bar
+import { ProgressBar } from 'react-native-paper'; 
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -22,7 +22,7 @@ const RankingPage = () => {
     backgroundGradientTo: '#08130D',
     backgroundGradientToOpacity: 0.5,
     color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
-    strokeWidth: 2, // optional, default 3
+    strokeWidth: 2, 
     barPercentage: 0.5,
   };
 

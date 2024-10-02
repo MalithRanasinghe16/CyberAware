@@ -28,7 +28,7 @@ export default function JobRolePage() {
 
         {/* Next Button */}
         <Pressable style={styles.button}>
-          <Link href="/(tabs)"> {/* Replace with actual route */}
+          <Link href="/(tabs)"> 
             <Text style={styles.buttonText}>Confirm</Text>
           </Link>
         </Pressable>
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   overlay: {
-    backgroundColor: 'rgba(255, 255, 255, 0.8)', // Semi-transparent overlay
+    backgroundColor: 'rgba(255, 255, 255, 0.8)', 
     padding: 20,
     borderRadius: 10,
     alignItems: 'center',

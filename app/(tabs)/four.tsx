@@ -5,7 +5,7 @@ import { MaterialIcons, Feather } from '@expo/vector-icons'; // Icons for sign-o
 const SettingsPage = ({ profilePictureUrl, userEmail, onSignOut }) => {
   return (
     <ImageBackground
-      source={require('../../assets/images/bg.png')} // Your background image
+      source={require('../../assets/images/bg.png')} 
       style={styles.background}
     >
       <View style={styles.container}>
