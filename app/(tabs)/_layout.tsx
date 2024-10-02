@@ -29,7 +29,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Tab One',
+          title: 'Home',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
           headerShown:false,
         
@@ -38,7 +38,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="two"
         options={{
-          title: 'Tab Two',
+          title: 'Learning',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
           headerShown:false,
         }}
@@ -46,7 +46,7 @@ export default function TabLayout() {
        <Tabs.Screen
         name="three"
         options={{
-          title: 'Tab Three',
+          title: 'Ranking',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
           headerShown:false,
         }}
@@ -54,7 +54,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="four"
         options={{
-          title: 'Tab Four',
+          title: 'Setings',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
           headerShown:false,
         }}
