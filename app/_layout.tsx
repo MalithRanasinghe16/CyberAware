@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/components/useColorScheme";
-import { getAuth, onAuthStateChanged } from "firebase/auth"; // Import Firebase auth
+import { getAuth, onAuthStateChanged, User } from "firebase/auth"; // Import Firebase auth
 import { firebaseApp } from "../Firebaseconfig"; // Firebase initialization file
 
 export {
@@ -53,43 +53,40 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null); // Hold the authenticated user state
+  const [loading, setLoading] = useState(true); // Loading state for auth check
   
   useEffect(() => {
     const auth = getAuth(firebaseApp);
 
     // Listen for authentication state changes
     const unsubscribe = onAuthStateChanged(auth, (authUser) => {
-      if (authUser) {
-        setUser(authUser); // Set the user if logged in
-      } else {
-        setUser(null); // User is not logged in
-      }
+      setUser(authUser); // Set the user based on auth state
       setLoading(false); // Stop loading once the auth state is checked
     });
 
+    // Cleanup the listener on unmount
     return () => unsubscribe();
   }, []);
 
   if (loading) {
-    return null; // You can show a loading spinner or splash screen here
+    return null; // Optionally, you can return a splash screen or loading spinner here
   }
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack>
         {/* If user is logged in, show the (tabs) page, else show the welcome page */}
-        {user ? (
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        ) : (
+        {!user ? (
           <Stack.Screen name="welcome" options={{ headerShown: false }} />
+        
+        ) : (
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         )}
         <Stack.Screen name="getstratpage" options={{ headerShown: false }} />
         <Stack.Screen name="infopage" options={{ headerShown: false }} />
         <Stack.Screen name="jobrall" options={{ headerShown: false }} />
-        <Stack.Screen name="learing-content" options={{ headerShown: false }} />
-        <Stack.Screen name="QuizPage" options={{ headerShown: false }} />
+        <Stack.Screen name="PasswordSecurity" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: "modal" }} />
       </Stack>
     </ThemeProvider>

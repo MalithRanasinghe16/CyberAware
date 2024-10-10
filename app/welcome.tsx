@@ -1,16 +1,17 @@
-// app/login.tsx
 import React, { useState } from 'react';
-import { ImageBackground, TextInput, View, Text, StyleSheet, Alert, Pressable } from 'react-native';
-import { Link, router } from 'expo-router';
+import { ImageBackground, TextInput, View, Text, StyleSheet, Alert, Pressable, Switch } from 'react-native';
+import { useRouter, Link } from 'expo-router';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-
-// Make sure Firebase is initialized in your project
+import { getFirestore, doc, getDoc } from 'firebase/firestore'; // Import Firestore functions
 import { firebaseApp } from '../Firebaseconfig'; 
 
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [isChecked, setIsChecked] = useState<boolean>(false);
+  const router = useRouter();
+  const db = getFirestore(firebaseApp); // Initialize Firestore
 
   const handleLogin = async () => {
     const auth = getAuth(firebaseApp);
@@ -20,16 +21,41 @@ export default function Login() {
       return;
     }
 
+    if (!isChecked) {
+      Alert.alert('Error', 'Please accept the rules and regulations.');
+      return;
+    }
+
     setLoading(true);
     
     try {
-      // Firebase authentication
-      await signInWithEmailAndPassword(auth, email, password);
-      // Redirect to next page after successful login
-      Alert.alert('Success', 'Login successful!');
-      router.replace('./getstratpage');
+      // Sign in user with email and password
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Check if user profile data is in Firestore
+      const userDocRef = doc(db, 'userInfo', user.uid); // Assuming 'users' collection
+      const userSnapshot = await getDoc(userDocRef);
+
+      if (userSnapshot.exists()) {
+        const userData = userSnapshot.data();
+
+        // Check if the user's profile is complete (first name, last name, username, profile picture)
+        const { firstName, lastName, username, profilePic } = userData;
+
+        if (!firstName || !lastName || !username || !profilePic) {
+          // If any required data is missing, navigate to getstartpage
+          router.replace('./getstartpage');
+        } else {
+          // If profile data is complete, navigate to the (tabs) page
+          router.replace('./(tabs)');
+        }
+      } else {
+        // If no user data exists in Firestore, navigate to getstartpage
+        router.replace('./getstartpage');
+      }
+      
     } catch (error) {
-      // Handle login error
       Alert.alert('Error', 'Failed to login. Please check your credentials.');
       console.error('Login error:', error);
     } finally {
@@ -38,11 +64,7 @@ export default function Login() {
   };
 
   return (
-    <ImageBackground
-      source={require('../assets/images/welcome-page.png')} 
-      style={styles.background}
-      resizeMode="cover" 
-    >
+    <ImageBackground source={require('../assets/images/welcome-page.png')} style={styles.background} resizeMode="cover">
       <View style={styles.overlay}>
         <TextInput
           placeholder="Email"
@@ -59,10 +81,17 @@ export default function Login() {
           style={styles.input}
           secureTextEntry
         />
-        {/* Use Pressable instead of Link for login button */}
+        {/* Checkbox for Terms and Conditions */}
+        <View style={styles.checkboxContainer}>
+          <Switch value={isChecked} onValueChange={setIsChecked} />
+          <Text style={styles.label}>I accept the rules and regulations</Text>
+        </View>
+        {/* Login Button */}
         <Pressable onPress={handleLogin} style={styles.buttonContainer}>
           <Text style={styles.buttonText}>{loading ? 'Logging in...' : 'Login'}</Text>
         </Pressable>
+        {/* Forgot Password Button */}
+        <Link href="./forgotPassword" style={styles.forgotPasswordText}>Forgot Password?</Link>
       </View>
     </ImageBackground>
   );
@@ -74,7 +103,7 @@ const styles = StyleSheet.create({
   },
   overlay: {
     flex: 1,
-    paddingTop: '50%', 
+    paddingTop: '80%',
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
@@ -86,6 +115,16 @@ const styles = StyleSheet.create({
     padding: 10,
     marginVertical: 10,
   },
+  checkboxContainer: {
+    flexDirection: 'row',
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  label: {
+    marginLeft: 10,
+    fontSize: 16,
+    color: '#fff',
+  },
   buttonContainer: {
     backgroundColor: '#007AFF',
     borderRadius: 5,
@@ -95,5 +134,10 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontSize: 18,
+  },
+  forgotPasswordText: {
+    marginTop: 10,
+    color: '#007AFF',
+    fontSize: 16,
   },
 });

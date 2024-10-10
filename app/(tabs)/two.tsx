@@ -1,30 +1,76 @@
-import { Link } from 'expo-router';
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, Image, ImageBackground, Pressable, TextInput, Dimensions } from 'react-native';
-
-// Placeholder data for Essentials and All Modules
-const essentialsCourses = [
-  { id: '1', title: 'Cybersecurity Awareness', description: 'Training Essentials', image: '' },
-  { id: '2', title: 'Phishing Attack Basics', description: 'Phishing Module', image: '' },
-  { id: '3', title: 'Password Security', description: 'Essential Module', image: '' },
-];
-
-const allModulesCourses = [
-  { id: '1', title: 'Social Engineering', description: 'Security Awareness Essentials' },
-  { id: '2', title: 'Malware Detection', description: 'Advanced Threats' },
-  { id: '3', title: 'Network Security', description: 'Firewall Essentials' },
-  { id: '4', title: 'Email Phishing', description: 'Phishing Prevention' },
-  { id: '5', title: 'Password Management', description: 'Best Practices' },
-];
+import { Href, Link, router } from 'expo-router';
+import React from 'react';
+import { View, Text, StyleSheet, ImageBackground, Pressable, TextInput, Dimensions, Image, FlatList } from 'react-native';
 
 export default function AllCoursesPage() {
+  // Placeholder data for Essentials and All Modules
+  const essentialsCourses = [
+    {
+      id: '1',
+      title: 'Password Security',
+      description: 'Introduction to Password Security',
+      image: require('../../assets/images/Cyber-Security-Essential.jpg'),
+      link: '../PasswordSecurity',
+    },
+    {
+      id: '2',
+      title: 'Phishing Attack Basics',
+      description: 'Phishing Module',
+      image: require('../../assets/images/Cyber-Security-Essential.jpg'),
+      link: '../PasswordSecurity',
+    },
+    {
+      id: '3',
+      title: 'Essential Module',
+      description: 'Password Security',
+      image: require('../../assets/images/Cyber-Security-Essential.jpg'),
+      link: '../PasswordSecurity',
+    },
+  ];
+
+  const allModulesCourses = [
+    {
+      id: '1',
+      title: 'Introduction to Password Security',
+      subtitle: 'Password Security',
+      link: '../PasswordSecurity',
+    },
+    {
+      id: '2',
+      title: 'Advanced Threats',
+      subtitle: 'Malware Detection',
+      link: '../PasswordSecurity',
+    },
+    {
+      id: '3',
+      title: 'Firewall Essentials',
+      subtitle: 'Network Security',
+      link: '../PasswordSecurity',
+    },
+    {
+      id: '4',
+      title: 'Phishing Prevention',
+      subtitle: 'Email Phishing',
+      link: '../PasswordSecurity',
+    },
+    {
+      id: '5',
+      title: 'Best Practices',
+      subtitle: 'Password Management',
+      link: '../PasswordSecurity',
+    },
+  ];
+
+  function setImageScale(arg0: number): void {
+    throw new Error('Function not implemented.');
+  }
+
   return (
     <ImageBackground
-      source={require('../../assets/images/bg.png')} 
+      source={require('../../assets/images/bg.png')}
       style={styles.background}
     >
       <View style={styles.container}>
-
         {/* Search Bar */}
         <Text style={styles.learningText}>Learning</Text>
         <View style={styles.searchContainer}>
@@ -43,9 +89,15 @@ export default function AllCoursesPage() {
           showsHorizontalScrollIndicator={false}
           renderItem={({ item }) => (
             <View style={styles.essentialsCard}>
-              <Image source={{ uri: item.image }} style={styles.essentialsImage} />
-              <Text style={styles.essentialsTitle}>{item.title}</Text>
-              <Text style={styles.essentialsSubtitle}>{item.description}</Text>
+              <Pressable
+        onPress={() => {router.push(item.link)}}
+        style={({ pressed }) => [{ opacity: pressed ? 0.9 : 1 }]} // Change opacity on press
+      >
+        <Image
+          source={item.image}
+          style={[styles.essentialsImage]}
+        />
+      </Pressable>
             </View>
           )}
           keyExtractor={(item) => item.id}
@@ -58,20 +110,17 @@ export default function AllCoursesPage() {
           data={allModulesCourses}
           renderItem={({ item }) => (
             <View style={styles.moduleCard}>
-              <Text style={styles.moduleTitle}>{item.description}</Text>
-              <Text style={styles.moduleSubtitle}>{item.title}</Text>
-              <Pressable  style={styles.startButton} >
-                <Link href="/learing-content">
-                <Text style={styles.startButtonText}>Start Learning</Text>
+              <Text style={styles.moduleTitle}>{item.title}</Text>
+              <Text style={styles.moduleSubtitle}>{item.subtitle}</Text>
+              <Pressable style={styles.startButton}>
+                <Link href={item.link as Href<string>}>
+                  <Text style={styles.startButtonText}>Start Learning</Text>
                 </Link>
-                
               </Pressable>
             </View>
           )}
           keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.modulesList}
         />
-
       </View>
     </ImageBackground>
   );
@@ -123,9 +172,10 @@ const styles = StyleSheet.create({
   },
   essentialsImage: {
     width: '100%',
-    height: 120,
+    height: '100%', // Increased height for better visibility
     borderRadius: 10,
     marginBottom: 10,
+    resizeMode: 'cover',
   },
   essentialsTitle: {
     fontSize: 18,
@@ -136,9 +186,6 @@ const styles = StyleSheet.create({
   essentialsSubtitle: {
     fontSize: 14,
     color: '#666',
-  },
-  modulesList: {
-    paddingBottom: 20,
   },
   moduleCard: {
     backgroundColor: '#FFF',
@@ -170,5 +217,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
- 
 });
