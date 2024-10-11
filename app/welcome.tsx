@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { ImageBackground, TextInput, View, Text, StyleSheet, Alert, Pressable, Switch } from 'react-native';
+import { ImageBackground, TextInput, View, Text, StyleSheet, Alert, Pressable, Switch, ActivityIndicator } from 'react-native';
 import { useRouter, Link } from 'expo-router';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { getFirestore, doc, getDoc } from 'firebase/firestore'; // Import Firestore functions
-import { firebaseApp } from '../Firebaseconfig'; 
+import { firebaseApp } from '../Firebaseconfig';
+import { FirebaseError } from 'firebase/app';
 
 export default function Login() {
   const [email, setEmail] = useState<string>('');
@@ -15,7 +16,7 @@ export default function Login() {
 
   const handleLogin = async () => {
     const auth = getAuth(firebaseApp);
-    
+
     if (!email || !password) {
       Alert.alert('Error', 'Please enter both email and password.');
       return;
@@ -27,7 +28,7 @@ export default function Login() {
     }
 
     setLoading(true);
-    
+
     try {
       // Sign in user with email and password
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -45,18 +46,28 @@ export default function Login() {
 
         if (!firstName || !lastName || !username || !profilePic) {
           // If any required data is missing, navigate to getstartpage
-          router.replace('./getstartpage');
+          router.replace('./getstratpage');
         } else {
           // If profile data is complete, navigate to the (tabs) page
           router.replace('./(tabs)');
         }
       } else {
         // If no user data exists in Firestore, navigate to getstartpage
-        router.replace('./getstartpage');
+        router.replace('./getstratpage');
       }
-      
+
     } catch (error) {
-      Alert.alert('Error', 'Failed to login. Please check your credentials.');
+      const firebaseError = error as FirebaseError;
+      let errorMessage = 'Failed to login. Please check your credentials.';
+      if (firebaseError.code === 'auth/invalid-email') {
+        errorMessage = 'Invalid email address.';
+      } else if (firebaseError.code === 'auth/wrong-password') {
+        errorMessage = 'Incorrect password.';
+      } else if (firebaseError.code === 'auth/user-not-found') {
+        errorMessage = 'No user found with this email.';
+      }
+
+      Alert.alert('Error', errorMessage);
       console.error('Login error:', error);
     } finally {
       setLoading(false);
@@ -87,8 +98,12 @@ export default function Login() {
           <Text style={styles.label}>I accept the rules and regulations</Text>
         </View>
         {/* Login Button */}
-        <Pressable onPress={handleLogin} style={styles.buttonContainer}>
-          <Text style={styles.buttonText}>{loading ? 'Logging in...' : 'Login'}</Text>
+        <Pressable onPress={handleLogin} style={styles.buttonContainer} disabled={loading}>
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.buttonText}>Login</Text>
+          )}
         </Pressable>
         {/* Forgot Password Button */}
         <Link href="./forgotPassword" style={styles.forgotPasswordText}>Forgot Password?</Link>
@@ -130,6 +145,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     marginTop: 20,
+    width: '80%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   buttonText: {
     color: '#fff',

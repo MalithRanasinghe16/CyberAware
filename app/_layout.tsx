@@ -53,8 +53,8 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
-  const [user, setUser] = useState<User | null>(null); // Hold the authenticated user state
-  const [loading, setLoading] = useState(true); // Loading state for auth check
+  const [user, setUser] = useState<User | null>(null); 
+  const [loading, setLoading] = useState(true); 
   
   useEffect(() => {
     const auth = getAuth(firebaseApp);
@@ -87,6 +87,11 @@ function RootLayoutNav() {
         <Stack.Screen name="infopage" options={{ headerShown: false }} />
         <Stack.Screen name="jobrall" options={{ headerShown: false }} />
         <Stack.Screen name="PasswordSecurity" options={{ headerShown: false }} />
+        <Stack.Screen name="PhishingAwareness" options={{ headerShown: false }} />
+        <Stack.Screen name="SIEU" options={{ headerShown: false }} />
+        <Stack.Screen name="DNS" options={{ headerShown: false }} />
+        <Stack.Screen name="DPP" options={{ headerShown: false }} />
+        <Stack.Screen name="QuizPage" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: "modal" }} />
       </Stack>
     </ThemeProvider>

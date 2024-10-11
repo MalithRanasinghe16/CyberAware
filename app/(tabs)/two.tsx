@@ -1,5 +1,5 @@
 import { Href, Link, router } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, ImageBackground, Pressable, TextInput, Dimensions, Image, FlatList } from 'react-native';
 
 export default function AllCoursesPage() {
@@ -14,17 +14,17 @@ export default function AllCoursesPage() {
     },
     {
       id: '2',
-      title: 'Phishing Attack Basics',
+      title: 'Phishing Awareness',
       description: 'Phishing Module',
-      image: require('../../assets/images/Cyber-Security-Essential.jpg'),
-      link: '../PasswordSecurity',
+      image: require('../../assets/images/Blog_Phishing-Awareness.jpg'),
+      link: '../PhishingAwareness',
     },
     {
       id: '3',
-      title: 'Essential Module',
-      description: 'Password Security',
-      image: require('../../assets/images/Cyber-Security-Essential.jpg'),
-      link: '../PasswordSecurity',
+      title: 'Safe Internet and Email Usage',
+      description: 'Safe Internet and Email Usage',
+      image: require('../../assets/images/hq720.jpg'),
+      link: '../SIEU',
     },
   ];
 
@@ -37,33 +37,38 @@ export default function AllCoursesPage() {
     },
     {
       id: '2',
-      title: 'Advanced Threats',
-      subtitle: 'Malware Detection',
-      link: '../PasswordSecurity',
+      title: 'Phishing Awareness',
+      subtitle: 'Introduction to Phishing Awareness',
+      link: '../PhishingAwareness',
     },
     {
       id: '3',
-      title: 'Firewall Essentials',
-      subtitle: 'Network Security',
-      link: '../PasswordSecurity',
+      title: 'Safe Internet and Email Usage',
+      subtitle: 'Introduction to Safe Internet and Email Usage',
+      link: '../SIEU',
     },
     {
       id: '4',
-      title: 'Phishing Prevention',
-      subtitle: 'Email Phishing',
-      link: '../PasswordSecurity',
+      title: 'Data Privacy and Protection',
+      subtitle: 'Full introduction to Data Privacy and Protection',
+      link: '../DPP',
     },
     {
       id: '5',
-      title: 'Best Practices',
-      subtitle: 'Password Management',
-      link: '../PasswordSecurity',
+      title: 'Device and Network Security',
+      subtitle: 'Full introduction to Device and Network Security',
+      link: '../DNS',
     },
   ];
 
-  function setImageScale(arg0: number): void {
-    throw new Error('Function not implemented.');
-  }
+  // State for search query
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  // Function to filter courses based on search input
+  const filteredCourses = allModulesCourses.filter((course) =>
+    course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    course.subtitle.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <ImageBackground
@@ -78,49 +83,75 @@ export default function AllCoursesPage() {
             placeholder="Search topic"
             placeholderTextColor="#BBB"
             style={styles.searchInput}
+            value={searchQuery} // Bind input value to state
+            onChangeText={setSearchQuery} // Update search query on text change
           />
         </View>
 
-        {/* Essentials Section (Horizontal Scroll) */}
-        <Text style={styles.sectionTitle}>The Essentials</Text>
-        <FlatList
-          data={essentialsCourses}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <View style={styles.essentialsCard}>
-              <Pressable
-        onPress={() => {router.push(item.link)}}
-        style={({ pressed }) => [{ opacity: pressed ? 0.9 : 1 }]} // Change opacity on press
-      >
-        <Image
-          source={item.image}
-          style={[styles.essentialsImage]}
-        />
-      </Pressable>
-            </View>
-          )}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.essentialsList}
-        />
+        {/* Display only modules if search query is present */}
+        {searchQuery ? (
+          <>
+            <Text style={styles.sectionTitle}>Search Results</Text>
+            <FlatList
+              data={filteredCourses} // Use filtered courses based on search input
+              renderItem={({ item }) => (
+                <View style={styles.moduleCard}>
+                  <Text style={styles.moduleTitle}>{item.title}</Text>
+                  <Text style={styles.moduleSubtitle}>{item.subtitle}</Text>
+                  <Pressable style={styles.startButton}>
+                    <Link href={item.link as Href<string>}>
+                      <Text style={styles.startButtonText}>Start Learning</Text>
+                    </Link>
+                  </Pressable>
+                </View>
+              )}
+              keyExtractor={(item) => item.id}
+            />
+          </>
+        ) : (
+          <>
+            {/* Essentials Section (Horizontal Scroll) */}
+            <Text style={styles.sectionTitle}>The Essentials</Text>
+            <FlatList
+              data={essentialsCourses}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              renderItem={({ item }) => (
+                <View style={styles.essentialsCard}>
+                  <Pressable
+                    onPress={() => {router.push(item.link)}}
+                    style={({ pressed }) => [{ opacity: pressed ? 0.9 : 1 }]} // Change opacity on press
+                  >
+                    <Image
+                      source={item.image}
+                      style={[styles.essentialsImage]}
+                    />
+                  </Pressable>
+                </View>
+              )}
+              keyExtractor={(item) => item.id}
+              contentContainerStyle={styles.essentialsList}
+            />
 
-        {/* All Modules Section (Vertical Scroll) */}
-        <Text style={styles.sectionTitle}>All Modules</Text>
-        <FlatList
-          data={allModulesCourses}
-          renderItem={({ item }) => (
-            <View style={styles.moduleCard}>
-              <Text style={styles.moduleTitle}>{item.title}</Text>
-              <Text style={styles.moduleSubtitle}>{item.subtitle}</Text>
-              <Pressable style={styles.startButton}>
-                <Link href={item.link as Href<string>}>
-                  <Text style={styles.startButtonText}>Start Learning</Text>
-                </Link>
-              </Pressable>
-            </View>
-          )}
-          keyExtractor={(item) => item.id}
-        />
+            {/* All Modules Section (Vertical Scroll) */}
+            <Text style={styles.sectionTitle}>All Modules</Text>
+            <FlatList
+              data={allModulesCourses}
+              renderItem={({ item }) => (
+                <View style={styles.moduleCard}>
+                  <Text style={styles.moduleTitle}>{item.title}</Text>
+                  <Text style={styles.moduleSubtitle}>{item.subtitle}</Text>
+                  <Pressable style={styles.startButton}>
+                    <Link href={item.link as Href<string>}>
+                      <Text style={styles.startButtonText}>Start Learning</Text>
+                    </Link>
+                  </Pressable>
+                </View>
+              )}
+              keyExtractor={(item) => item.id}
+            />
+          </>
+        )}
       </View>
     </ImageBackground>
   );

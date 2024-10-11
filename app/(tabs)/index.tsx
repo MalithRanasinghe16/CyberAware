@@ -1,26 +1,30 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, FlatList, Pressable, ImageBackground, ActivityIndicator, Modal, Alert } from 'react-native';
-import { getFirestore, doc, getDoc, updateDoc } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
-import { firebaseApp } from '../../Firebaseconfig';
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  Pressable,
+  ImageBackground,
+  ActivityIndicator,
+} from "react-native";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import { firebaseApp } from "../../Firebaseconfig";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { Link, router } from "expo-router";
 
-const enrolledCourses = [
-  { title: "Social Engineering", description: "Security Awareness Essentials" },
-  { title: "Email Phishing", description: "Phishing" },
-];
+interface RouteParams {
+  completedModule: string; // or any other type you expect
+}
 
 export default function HomePage() {
+  const navigation = useNavigation();
+  const route = useRoute();
+  const { completedModule } = (route.params as RouteParams) || {};
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [quizVisible, setQuizVisible] = useState(false);
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [score, setScore] = useState(0);
-  const [quizFinished, setQuizFinished] = useState(false);
-
-  const quizQuestions = [
-    { question: "What is phishing?", options: ["An attack method", "A harmless activity"], correct: 0 },
-    { question: "How do you detect phishing?", options: ["Suspicious links", "Safe websites"], correct: 0 },
-  ];
+  const [allModulesCourses, setAllModulesCourses] = useState([]);
 
   // Fetch user profile data from Firestore
   useEffect(() => {
@@ -28,16 +32,23 @@ export default function HomePage() {
       try {
         const userId = getAuth(firebaseApp).currentUser?.uid;
         const db = getFirestore(firebaseApp);
-        const docRef = doc(db, 'userInfo', userId);
+        const docRef = doc(db, "userInfo", userId);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-          setProfileData(docSnap.data());
+          const userData = docSnap.data();
+          const totalScore = userData.totalScore || 0;
+          const rankingPercentage = (totalScore / 150) * 100; // Max score is 150 points
+
+          setProfileData({
+            ...userData,
+            rankingPercentage: rankingPercentage,
+          });
         } else {
-          console.log('No such document!');
+          console.log("No such document!");
         }
       } catch (error) {
-        console.error('Error fetching profile data:', error);
+        console.error("Error fetching profile data:", error);
       } finally {
         setLoading(false);
       }
@@ -46,93 +57,79 @@ export default function HomePage() {
     fetchProfileData();
   }, []);
 
-  const handleAnswer = (selectedOption: number) => {
-    if (selectedOption === quizQuestions[currentQuestion].correct) {
-      setScore(score + 1);
+  const navigateToQuiz = (module: any) => {
+    let quizLink;
+
+    // Determine the quiz link based on the module name
+    switch (module) {
+      case "PasswordSecurity":
+        quizLink = "/QuizPage?module=PasswordSecurity";
+        break;
+      case "PhishingAwareness":
+        quizLink = "/QuizPage?module=PhishingAwareness";
+        break;
+      case "SafeInternet":
+        quizLink = "/QuizPage?module=SafeInternet";
+        break;
+      case "DataPrivacy":
+        quizLink = "/QuizPage?module=SafeInternet";
+        break;
+      case "DeviceNetwork":
+        quizLink = "/QuizPage?module=SafeInternet";
+        break;
+
+      default:
+        console.log("No quiz found for this module");
+        return;
     }
 
-    if (currentQuestion + 1 < quizQuestions.length) {
-      setCurrentQuestion(currentQuestion + 1);
-    } else {
-      setQuizFinished(true);
-      setQuizVisible(false);
-      updateRanking(score + 1);
-    }
+    // Navigate to the quiz page
+    router.push(quizLink);
   };
-
-  const updateRanking = async (finalScore: number) => {
-    try {
-      const userId = getAuth(firebaseApp).currentUser?.uid;
-      const db = getFirestore(firebaseApp);
-      const userRef = doc(db, 'userInfo', userId);
-
-      const rankingPercentage = (finalScore / quizQuestions.length) * 100;
-
-      await updateDoc(userRef, { rankingPercentage });
-      Alert.alert('Ranking updated', `Your score is ${finalScore}/5!`);
-    } catch (error) {
-      console.error('Error updating ranking:', error);
-    }
-  };
-
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#4CAF50" />
-      </View>
-    );
-  }
 
   return (
-    <ImageBackground source={require('../../assets/images/bg.png')} style={styles.background}>
+    <ImageBackground
+      source={require("../../assets/images/bg.png")}
+      style={styles.background}
+    >
       <View style={styles.container}>
-
         {/* Profile Picture and Ranking */}
         <View style={styles.profileContainer}>
-          <Image source={{ uri: profileData?.profilePicture }} style={styles.profilePicture} />
+          <Image
+            source={{ uri: profileData?.profilePicture }}
+            style={styles.profilePicture}
+          />
           <View style={styles.rankingContainer}>
             <Text style={styles.rankingText}>Ranking</Text>
             <View style={styles.rankBar}>
-              <View style={[styles.rankFill, { width: `${profileData?.rankingPercentage || 0}%` }]} />
+              <View
+                style={[
+                  styles.rankFill,
+                  { width: `${profileData?.rankingPercentage || 0}%` }, 
+                ]}
+              />
             </View>
           </View>
         </View>
 
-        {/* Enrolled Courses */}
-        <Text style={styles.enrolledText}>Current Enrolled Courses</Text>
-        <FlatList
-          data={enrolledCourses}
-          renderItem={({ item }) => (
-            <View style={styles.courseContainer}>
-              <Text style={styles.courseTitle}>{item.description}</Text>
-              <Text style={styles.courseSubtitle}>{item.title}</Text>
-              <Pressable style={styles.continueButton} onPress={() => setQuizVisible(true)}>
-                <Text style={styles.continueButtonText}>Continue</Text>
-              </Pressable>
-            </View>
-          )}
-          keyExtractor={(item, index) => index.toString()}
-          contentContainerStyle={styles.coursesList}
-        />
-
-        {/* Quiz Modal */}
-        <Modal visible={quizVisible} transparent={true}>
-          <View style={styles.quizOverlay}>
-            {!quizFinished ? (
-              <>
-                <Text style={styles.quizQuestion}>{quizQuestions[currentQuestion].question}</Text>
-                {quizQuestions[currentQuestion].options.map((option, index) => (
-                  <Pressable key={index} onPress={() => handleAnswer(index)} style={styles.quizOption}>
-                    <Text style={styles.quizOptionText}>{option}</Text>
-                  </Pressable>
-                ))}
-              </>
-            ) : (
-              <Text style={styles.quizFinishedText}>Quiz Completed!</Text>
-            )}
+        {/* Completed Module Section */}
+        {completedModule ? (
+          <View style={styles.completedContainer}>
+            <Text style={styles.completedText}>
+              Completed Module: {completedModule}
+            </Text>
+            <Pressable
+              style={styles.continueButton}
+              onPress={() => navigateToQuiz(completedModule)}
+            >
+              <Text style={styles.continueButtonText}>Take Quiz again</Text>
+            </Pressable>
           </View>
-        </Modal>
-
+        ) : (
+          <Text style={styles.instructionsText}>
+            Complete a quiz to see your completed modules!
+          </Text>
+        )}
       </View>
     </ImageBackground>
   );
@@ -141,7 +138,7 @@ export default function HomePage() {
 const styles = StyleSheet.create({
   background: {
     flex: 1,
-    resizeMode: 'cover',
+    resizeMode: "cover",
   },
   container: {
     flex: 1,
@@ -150,111 +147,99 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   profileContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 30,
   },
   profilePicture: {
     width: 70,
     height: 70,
     borderRadius: 35,
-    backgroundColor: '#ddd',
+    backgroundColor: "#ddd",
     marginRight: 20,
   },
   rankingContainer: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   rankingText: {
     fontSize: 18,
-    fontWeight: '600',
-    color: '#fff',
+    fontWeight: "600",
+    color: "#fff",
   },
   rankBar: {
     height: 20,
-    backgroundColor: '#ccc',
+    backgroundColor: "#ccc",
     borderRadius: 10,
     marginTop: 5,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   rankFill: {
-    height: '100%',
-    backgroundColor: '#4CAF50',
+    height: "100%",
+    backgroundColor: "#4CAF50",
   },
-  enrolledText: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 10,
-    marginTop: 30,
-  },
-  coursesList: {
-    paddingBottom: 20,
-  },
-  courseContainer: {
-    backgroundColor: '#fff',
+  completedContainer: {
+    backgroundColor: "#fff",
     padding: 15,
     borderRadius: 10,
     marginBottom: 15,
     borderWidth: 2,
-    borderColor: '#ddd',
-    shadowColor: '#000',
+    borderColor: "#ddd",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 5,
     elevation: 3,
+    marginTop: 20,
   },
-  courseTitle: {
+  completedText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#4CAF50",
+    marginBottom: 10,
+  },
+  instructionsText: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#4CAF50',
-    marginBottom: 5,
-  },
-  courseSubtitle: {
-    fontSize: 14,
-    color: '#555',
-    marginBottom: 15,
+    color: "#fff",
+    marginTop: 20,
   },
   continueButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: "#4CAF50",
     paddingVertical: 10,
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
   continueButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
-  quizOverlay: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.7)',
+  modulesList: {
+    marginTop: 20,
   },
-  quizQuestion: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 20,
-  },
-  quizOption: {
-    padding: 15,
-    backgroundColor: '#4CAF50',
-    marginBottom: 10,
+  moduleCard: {
+    backgroundColor: "#fff",
     borderRadius: 10,
+    padding: 15,
+    marginBottom: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
   },
-  quizOptionText: {
-    color: '#fff',
+  moduleTitle: {
     fontSize: 18,
+    fontWeight: "bold",
+    color: "#333",
   },
-  quizFinishedText: {
-    fontSize: 24,
-    color: '#fff',
-    fontWeight: 'bold',
+  moduleSubtitle: {
+    fontSize: 14,
+    color: "#666",
+    marginVertical: 5,
   },
 });
