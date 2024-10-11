@@ -53,9 +53,9 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
-  const [user, setUser] = useState<User | null>(null); 
-  const [loading, setLoading] = useState(true); 
-  
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const auth = getAuth(firebaseApp);
 
@@ -77,17 +77,22 @@ function RootLayoutNav() {
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack>
         {/* If user is logged in, show the (tabs) page, else show the welcome page */}
-        {!user ? (
-          <Stack.Screen name="welcome" options={{ headerShown: false }} />
-        
-        ) : (
+        {user ? (
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        ) : (
+          <Stack.Screen name="welcome" options={{ headerShown: false }} />
         )}
         <Stack.Screen name="getstratpage" options={{ headerShown: false }} />
         <Stack.Screen name="infopage" options={{ headerShown: false }} />
         <Stack.Screen name="jobrall" options={{ headerShown: false }} />
-        <Stack.Screen name="PasswordSecurity" options={{ headerShown: false }} />
-        <Stack.Screen name="PhishingAwareness" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="PasswordSecurity"
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="PhishingAwareness"
+          options={{ headerShown: false }}
+        />
         <Stack.Screen name="SIEU" options={{ headerShown: false }} />
         <Stack.Screen name="DNS" options={{ headerShown: false }} />
         <Stack.Screen name="DPP" options={{ headerShown: false }} />

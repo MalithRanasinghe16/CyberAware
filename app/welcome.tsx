@@ -44,12 +44,13 @@ export default function Login() {
         // Check if the user's profile is complete (first name, last name, username, profile picture)
         const { firstName, lastName, username, profilePic } = userData;
 
-        if (!firstName || !lastName || !username || !profilePic) {
+        if (firstName || lastName || username || profilePic) {
           // If any required data is missing, navigate to getstartpage
-          router.replace('./getstratpage');
+          router.replace('./(tabs)');
+          
         } else {
           // If profile data is complete, navigate to the (tabs) page
-          router.replace('./(tabs)');
+          router.replace('./getstratpage');
         }
       } else {
         // If no user data exists in Firestore, navigate to getstartpage
