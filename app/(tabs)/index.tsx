@@ -17,7 +17,10 @@ import { Link, router } from "expo-router";
 interface RouteParams {
   completedModule: string; // or any other type you expect
 }
-
+interface ProfileData {
+  totalScore: number;
+  rankingPercentage: number;
+}
 export default function HomePage() {
   const navigation = useNavigation();
   const route = useRoute();
@@ -30,7 +33,7 @@ export default function HomePage() {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const userId = getAuth(firebaseApp).currentUser?.uid;
+        const userId = getAuth(firebaseApp).currentUser?.uid ?? "default-user-id";
         const db = getFirestore(firebaseApp);
         const docRef = doc(db, "userInfo", userId);
         const docSnap = await getDoc(docRef);
@@ -38,7 +41,7 @@ export default function HomePage() {
         if (docSnap.exists()) {
           const userData = docSnap.data();
           const totalScore = userData.totalScore || 0;
-          const rankingPercentage = (totalScore / 150) * 100; // Max score is 150 points
+          const rankingPercentage = (totalScore / 150) * 100; 
 
           setProfileData({
             ...userData,

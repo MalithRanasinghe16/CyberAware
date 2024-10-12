@@ -46,7 +46,7 @@ export default function Login() {
 
         if (firstName || lastName || username || profilePic) {
           // If any required data is missing, navigate to getstartpage
-          router.replace('./(tabs)');
+          router.push('./(tabs)');
           
         } else {
           // If profile data is complete, navigate to the (tabs) page

@@ -17,7 +17,7 @@ export default function ForgotPassword() {
     try {
       await sendPasswordResetEmail(auth, email);
       Alert.alert('Success', `Password reset email has been sent to ${email}. Please check your inbox.`);
-      router.navigate('./welcome');
+      router.navigate('./newpasswordcreation');
     } catch (error: any) {
       if (error.code === 'auth/user-not-found') {
         Alert.alert('Error', 'Email not found. Please check and try again.');
