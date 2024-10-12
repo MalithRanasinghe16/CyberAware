@@ -1,29 +1,81 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, Image, ImageBackground, Pressable, TextInput, Dimensions } from 'react-native';
-
-// Placeholder data for Essentials and All Modules
-const essentialsCourses = [
-  { id: '1', title: 'Cybersecurity Awareness', description: 'Training Essentials', image: 'https://your-image-url.com/essentials1.jpg' },
-  { id: '2', title: 'Phishing Attack Basics', description: 'Phishing Module', image: 'https://your-image-url.com/essentials2.jpg' },
-  { id: '3', title: 'Password Security', description: 'Essential Module', image: 'https://your-image-url.com/essentials3.jpg' },
-];
-
-const allModulesCourses = [
-  { id: '1', title: 'Social Engineering', description: 'Security Awareness Essentials' },
-  { id: '2', title: 'Malware Detection', description: 'Advanced Threats' },
-  { id: '3', title: 'Network Security', description: 'Firewall Essentials' },
-  { id: '4', title: 'Email Phishing', description: 'Phishing Prevention' },
-  { id: '5', title: 'Password Management', description: 'Best Practices' },
-];
+import { Href, Link, router } from 'expo-router';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ImageBackground, Pressable, TextInput, Dimensions, Image, FlatList } from 'react-native';
 
 export default function AllCoursesPage() {
+  // Placeholder data for Essentials and All Modules
+  const essentialsCourses = [
+    {
+      id: '1',
+      title: 'Password Security',
+      description: 'Introduction to Password Security',
+      image: require('../../assets/images/PasswordSecNEW.png'),
+      link: '../PasswordSecurity',
+    },
+    {
+      id: '2',
+      title: 'Phishing Awareness',
+      description: 'Phishing Module',
+      image: require('../../assets/images/PhishingNEW.png'),
+      link: '../PhishingAwareness',
+    },
+    {
+      id: '3',
+      title: 'Safe Internet and Email Usage',
+      description: 'Safe Internet and Email Usage',
+      image: require('../../assets/images/SafeInternetNEW.png'),
+      link: '../SIEU',
+    },
+  ];
+
+  const allModulesCourses = [
+    {
+      id: '1',
+      title: 'Introduction to Password Security',
+      subtitle: 'Password Security',
+      link: '../PasswordSecurity',
+    },
+    {
+      id: '2',
+      title: 'Phishing Awareness',
+      subtitle: 'Introduction to Phishing Awareness',
+      link: '../PhishingAwareness',
+    },
+    {
+      id: '3',
+      title: 'Safe Internet and Email Usage',
+      subtitle: 'Introduction to Safe Internet and Email Usage',
+      link: '../SIEU',
+    },
+    {
+      id: '4',
+      title: 'Data Privacy and Protection',
+      subtitle: 'Full introduction to Data Privacy and Protection',
+      link: '../DPP',
+    },
+    {
+      id: '5',
+      title: 'Device and Network Security',
+      subtitle: 'Full introduction to Device and Network Security',
+      link: '../DNS',
+    },
+  ];
+
+  // State for search query
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  // Function to filter courses based on search input
+  const filteredCourses = allModulesCourses.filter((course) =>
+    course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    course.subtitle.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <ImageBackground
-      source={require('../../assets/images/bg.png')} // Replace with your background image URL
+      source={require('../../assets/images/bg.png')}
       style={styles.background}
     >
       <View style={styles.container}>
-
         {/* Search Bar */}
         <Text style={styles.learningText}>Learning</Text>
         <View style={styles.searchContainer}>
@@ -31,43 +83,75 @@ export default function AllCoursesPage() {
             placeholder="Search topic"
             placeholderTextColor="#BBB"
             style={styles.searchInput}
+            value={searchQuery} // Bind input value to state
+            onChangeText={setSearchQuery} // Update search query on text change
           />
         </View>
 
-        {/* Essentials Section (Horizontal Scroll) */}
-        <Text style={styles.sectionTitle}>The Essentials</Text>
-        <FlatList
-          data={essentialsCourses}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <View style={styles.essentialsCard}>
-              <Image source={{ uri: item.image }} style={styles.essentialsImage} />
-              <Text style={styles.essentialsTitle}>{item.title}</Text>
-              <Text style={styles.essentialsSubtitle}>{item.description}</Text>
-            </View>
-          )}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.essentialsList}
-        />
+        {/* Display only modules if search query is present */}
+        {searchQuery ? (
+          <>
+            <Text style={styles.sectionTitle}>Search Results</Text>
+            <FlatList
+              data={filteredCourses} // Use filtered courses based on search input
+              renderItem={({ item }) => (
+                <View style={styles.moduleCard}>
+                  <Text style={styles.moduleTitle}>{item.title}</Text>
+                  <Text style={styles.moduleSubtitle}>{item.subtitle}</Text>
+                  <Pressable style={styles.startButton}>
+                    <Link href={item.link as Href<string>}>
+                      <Text style={styles.startButtonText}>Start Learning</Text>
+                    </Link>
+                  </Pressable>
+                </View>
+              )}
+              keyExtractor={(item) => item.id}
+            />
+          </>
+        ) : (
+          <>
+            {/* Essentials Section (Horizontal Scroll) */}
+            <Text style={styles.sectionTitle}>The Essentials</Text>
+            <FlatList
+              data={essentialsCourses}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              renderItem={({ item }) => (
+                <View style={styles.essentialsCard}>
+                  <Pressable
+                    onPress={() => {router.push(item.link)}}
+                    style={({ pressed }) => [{ opacity: pressed ? 0.9 : 1 }]} // Change opacity on press
+                  >
+                    <Image
+                      source={item.image}
+                      style={[styles.essentialsImage]}
+                    />
+                  </Pressable>
+                </View>
+              )}
+              keyExtractor={(item) => item.id}
+              contentContainerStyle={styles.essentialsList}
+            />
 
-        {/* All Modules Section (Vertical Scroll) */}
-        <Text style={styles.sectionTitle}>All Modules</Text>
-        <FlatList
-          data={allModulesCourses}
-          renderItem={({ item }) => (
-            <View style={styles.moduleCard}>
-              <Text style={styles.moduleTitle}>{item.description}</Text>
-              <Text style={styles.moduleSubtitle}>{item.title}</Text>
-              <Pressable style={styles.startButton}>
-                <Text style={styles.startButtonText}>Start Learning</Text>
-              </Pressable>
-            </View>
-          )}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.modulesList}
-        />
-
+            {/* All Modules Section (Vertical Scroll) */}
+            <Text style={styles.sectionTitle}>All Modules</Text>
+            <FlatList
+              data={allModulesCourses}
+              renderItem={({ item }) => (
+                <View style={styles.moduleCard}>
+                  <Text style={styles.moduleTitle}>{item.title}</Text>
+                  <Text style={styles.moduleSubtitle}>{item.subtitle}</Text>
+                  <Pressable style={styles.startButton}>
+                    <Link href={item.link as Href<string>}>
+                      <Text style={styles.startButtonText}>Start Learning</Text>
+                    </Link>
+                  </Pressable>
+                </View>
+              )}
+              keyExtractor={(item) => item.id}
+            />
+          </>
+        )}
       </View>
     </ImageBackground>
   );
@@ -87,7 +171,7 @@ const styles = StyleSheet.create({
   learningText: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#000',
+    color: '#fff',
     marginBottom: 10,
   },
   searchContainer: {
@@ -104,7 +188,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#000',
+    color: '#fff',
     marginBottom: 10,
   },
   essentialsList: {
@@ -119,9 +203,10 @@ const styles = StyleSheet.create({
   },
   essentialsImage: {
     width: '100%',
-    height: 120,
+    height: '100%', // Increased height for better visibility
     borderRadius: 10,
     marginBottom: 10,
+    resizeMode: 'cover',
   },
   essentialsTitle: {
     fontSize: 18,
@@ -132,9 +217,6 @@ const styles = StyleSheet.create({
   essentialsSubtitle: {
     fontSize: 14,
     color: '#666',
-  },
-  modulesList: {
-    paddingBottom: 20,
   },
   moduleCard: {
     backgroundColor: '#FFF',
@@ -166,5 +248,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
- 
 });
