@@ -230,10 +230,7 @@ const SettingsPage = () => {
           {/* Edit Profile */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Account</Text>
-            <TouchableOpacity
-              style={styles.option}
-              onPress={ handleEditProfile}
-            >
+            <TouchableOpacity style={styles.option} onPress={handleEditProfile}>
               <MaterialIcons name="account-circle" size={24} color="white" />
               <Text style={styles.optionText}>Profile Details</Text>
             </TouchableOpacity>
@@ -249,10 +246,6 @@ const SettingsPage = () => {
           {/* Security Sections */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Security</Text>
-            <TouchableOpacity style={styles.option}>
-              <MaterialIcons name="vpn-key" size={24} color="white" />
-              <Text style={styles.optionText}>Passkey</Text>
-            </TouchableOpacity>
 
             <TouchableOpacity
               style={styles.option}
@@ -305,10 +298,12 @@ const SettingsPage = () => {
             <Button title="Save Changes" onPress={handleSaveProfile} />
 
             {/* Cancel Button */}
-            <Button
-              title="Cancel"
-              onPress={() => setIsEditProfileModalVisible(false)}
-            />
+            <View style={{ marginTop: 10 }}>
+              <Button
+                title="Cancel"
+                onPress={() => setIsEditProfileModalVisible(false)}
+              />
+            </View>
           </View>
         </Modal>
 
@@ -319,15 +314,20 @@ const SettingsPage = () => {
           animationType="slide"
         >
           <View style={styles.modalContainer}>
-            <Text>Are you sure you want to request account deletion?</Text>
+            <Text style = {styles.modalTitle}>Are you sure you want to request account deletion?</Text>
+            <View style={{ marginTop: 10 }}>
             <Button
               title="Request Account Deletion"
               onPress={handleRequestDelete}
             />
+            </View>
+            <View style={{ marginTop: 10 }}>
             <Button
               title="Cancel"
               onPress={() => setIsDeleteAccountModalVisible(false)}
             />
+            </View>
+           
           </View>
         </Modal>
         {/* Privacy Policy Modal */}
@@ -561,7 +561,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   section: {
-    marginBottom: 30,
+    marginBottom: 40,
   },
   sectionTitle: {
     fontSize: 20,
