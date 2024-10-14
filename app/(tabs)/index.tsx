@@ -7,6 +7,8 @@ import {
   Pressable,
   ImageBackground,
   ActivityIndicator,
+  FlatList,
+  Dimensions,
 } from "react-native";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
@@ -15,7 +17,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { Link, router } from "expo-router";
 
 interface RouteParams {
-  completedModule: string; // or any other type you expect
+  completedModule: string;
 }
 interface ProfileData {
   totalScore: number;
@@ -29,11 +31,37 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [allModulesCourses, setAllModulesCourses] = useState([]);
 
+  // Placeholder data for Essentials and All Modules
+  const essentialsCourses = [
+    {
+      id: "1",
+      title: "Password Security",
+      description: "Introduction to Password Security",
+      image: require("../../assets/images/PasswordSecNEW.png"),
+      link: "../PasswordSecurity",
+    },
+    {
+      id: "2",
+      title: "Phishing Awareness",
+      description: "Phishing Module",
+      image: require("../../assets/images/PhishingNEW.png"),
+      link: "../PhishingAwareness",
+    },
+    {
+      id: "3",
+      title: "Safe Internet and Email Usage",
+      description: "Safe Internet and Email Usage",
+      image: require("../../assets/images/SafeInternetNEW.png"),
+      link: "../SIEU",
+    },
+  ];
+
   // Fetch user profile data from Firestore
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const userId = getAuth(firebaseApp).currentUser?.uid ?? "default-user-id";
+        const userId =
+          getAuth(firebaseApp).currentUser?.uid ?? "default-user-id";
         const db = getFirestore(firebaseApp);
         const docRef = doc(db, "userInfo", userId);
         const docSnap = await getDoc(docRef);
@@ -41,7 +69,7 @@ export default function HomePage() {
         if (docSnap.exists()) {
           const userData = docSnap.data();
           const totalScore = userData.totalScore || 0;
-          const rankingPercentage = (totalScore / 150) * 100; 
+          const rankingPercentage = (totalScore / 150) * 100;
 
           setProfileData({
             ...userData,
@@ -108,12 +136,34 @@ export default function HomePage() {
               <View
                 style={[
                   styles.rankFill,
-                  { width: `${profileData?.rankingPercentage || 0}%` }, 
+                  { width: `${profileData?.rankingPercentage || 0}%` },
                 ]}
               />
             </View>
           </View>
         </View>
+
+        {/* Essentials Section (Horizontal Scroll) */}
+        <Text style={styles.sectionTitle}>The Essentials</Text>
+        <FlatList
+          data={essentialsCourses}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          renderItem={({ item }) => (
+            <View style={styles.essentialsCard}>
+              <Pressable
+                onPress={() => {
+                  router.push(item.link);
+                }}
+                style={({ pressed }) => [{ opacity: pressed ? 0.9 : 1 }]}
+              >
+                <Image source={item.image} style={[styles.essentialsImage]} />
+              </Pressable>
+            </View>
+          )}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.essentialsList}
+        />
 
         {/* Completed Module Section */}
         {completedModule ? (
@@ -189,7 +239,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 15,
     borderRadius: 10,
-    marginBottom: 15,
+    marginBottom: 200,
     borderWidth: 2,
     borderColor: "#ddd",
     shadowColor: "#000",
@@ -207,8 +257,10 @@ const styles = StyleSheet.create({
   },
   instructionsText: {
     fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
     color: "#fff",
-    marginTop: 20,
+    marginBottom: "70%",
   },
   continueButton: {
     backgroundColor: "#4CAF50",
@@ -244,5 +296,34 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#666",
     marginVertical: 5,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#fff",
+    marginBottom: 10,
+  },
+  
+  essentialsCard: {
+    backgroundColor: "#FFF",
+    borderRadius: 10,
+    marginRight: 15,
+    width: Dimensions.get("screen").width * 0.75,
+    height: 300,
+  },
+  essentialsImage: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 10,
+    resizeMode: "cover",
+  },
+  essentialsTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  essentialsSubtitle: {
+    fontSize: 14,
+    color: "#666",
   },
 });

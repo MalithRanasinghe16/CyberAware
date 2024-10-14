@@ -93,7 +93,7 @@ export default function AllCoursesPage() {
           <>
             <Text style={styles.sectionTitle}>Search Results</Text>
             <FlatList
-              data={filteredCourses} // Use filtered courses based on search input
+              data={filteredCourses}
               renderItem={({ item }) => (
                 <View style={styles.moduleCard}>
                   <Text style={styles.moduleTitle}>{item.title}</Text>
@@ -120,7 +120,7 @@ export default function AllCoursesPage() {
                 <View style={styles.essentialsCard}>
                   <Pressable
                     onPress={() => {router.push(item.link)}}
-                    style={({ pressed }) => [{ opacity: pressed ? 0.9 : 1 }]} // Change opacity on press
+                    style={({ pressed }) => [{ opacity: pressed ? 0.9 : 1 }]} 
                   >
                     <Image
                       source={item.image}

@@ -90,11 +90,12 @@ function RootLayoutNav() {
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack>
-        {user ? (
+        {/* {user ? (
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         ) : (
           <Stack.Screen name="welcome" options={{ headerShown: false }} />
-        )}
+        )} */}
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="getstratpage" options={{ headerShown: false }} />
         <Stack.Screen name="infopage" options={{ headerShown: false }} />
         <Stack.Screen name="jobrall" options={{ headerShown: false }} />

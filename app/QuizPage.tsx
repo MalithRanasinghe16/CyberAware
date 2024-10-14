@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { View, Text, StyleSheet, Pressable, Alert } from "react-native";
+import { View, Text, StyleSheet, Pressable, Alert, ImageBackground } from "react-native";
 import quizData from "./quizData"; // Import your quiz data
 import { useRoute } from "@react-navigation/native";
 import { firebaseApp } from "../Firebaseconfig";
@@ -78,7 +78,11 @@ const QuizPage = () => {
     }
   };
 
-  return (
+  return ( 
+  <ImageBackground
+    source={require('../assets/images/bg.png')}
+    style={styles.background}
+  >
     <View style={styles.container}>
       <Text style={styles.title}>{module} Quiz</Text>
       {questions.length > 0 && (
@@ -98,12 +102,21 @@ const QuizPage = () => {
         </View>
       )}
     </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    resizeMode: 'cover',
+    justifyContent: 'center',
+  },
   container: {
     padding: 20,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    marginHorizontal: 20,
   },
   title: {
     fontSize: 24,
